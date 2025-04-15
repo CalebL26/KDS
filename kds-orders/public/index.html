@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Fresh KDS Orders with Recipes, Filters & CSV Insert</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap CSS -->
+  <link 
+    rel="stylesheet" 
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+    crossorigin="anonymous"
+  >
+  <style>
+    body {
+      background-color: #1d1d5c;
+      color: #fff;
+    }
+    /* Top bar styling */
+    .top-bar {
+      background-color: #d9d2d2;
+      padding: 1rem;
+    }
+    .top-bar h1 {
+      margin: 0;
+    }
+    .shift-down {
+      margin-top: 0.75rem;
+    }
+    .admin-only {
+      display: none;
+    }
+    #drop-zone-container {
+      display: none;
+      margin: 1rem;
+    }
+    .drop-zone {
+      border: 2px dashed #bbb;
+      border-radius: 8px;
+      padding: 2rem;
+      text-align: center;
+      color: #bbb;
+    }
+    .drop-zone.dragover {
+      border-color: #fff;
+      color: #fff;
+    }
+    .order-card {
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+      background-color: #070707;
+    }
+    .order-header {
+      background-color: #6c9b77;
+      color: #fff;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .order-header h5 {
+      margin: 0;
+      font-weight: 600;
+    }
+    .order-header small {
+      display: block;
+      font-size: 0.8rem;
+    }
+    .order-timer {
+      background-color: #ffc107;
+      color: #343a40;
+      padding: 0.4rem 0.6rem;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    .order-body {
+      padding: 1rem;
+    }
+    .order-type-btn {
+      display: inline-block;
+      padding: 0.4rem 0.8rem;
+      border-radius: 4px;
+      color: #fff;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      border: none;
+    }
+    .type-for-here {
+      background-color: #d63384;
+    }
+    .type-to-go {
+      background-color: #fd7e14;
+    }
+    .order-items {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .order-items li {
+      padding: 0.3rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+    .order-items li:last-child {
+      border-bottom: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Admin Login Modal -->
+  <div class="modal fade" id="adminLoginModal" tabindex="-1" aria-labelledby="adminLoginModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content text-dark">
+         <div class="modal-header">
+            <h5 class="modal-title" id="adminLoginModalLabel">Admin Login</h5>
+         </div>
+         <div class="modal-body">
+            <form id="adminLoginForm">
+                <div class="mb-3">
+                  <label for="username" class="form-label">Username</label>
+                  <input type="text" class="form-control" id="username" required>
+                </div>
+                <div class="mb-3">
+                  <label for="password" class="form-label">Password</label>
+                  <input type="password" class="form-control" id="password" required>
+                </div>
+            </form>
+         </div>
+         <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="loginButton">Login</button>
+         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- View CSV Modal -->
+  <div class="modal fade" id="viewCSVModal" tabindex="-1" aria-labelledby="viewCSVModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content text-dark">
+         <div class="modal-header">
+            <h5 class="modal-title" id="viewCSVModalLabel">CSV Files</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+         </div>
+         <div class="modal-body" id="csvFileList" style="max-height:400px; overflow:auto;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Bar -->
+  <div class="top-bar d-flex align-items-center justify-content-between gap-3">
+    <!-- Left group: Heading, filters, admin buttons -->
+    <div class="d-flex align-items-center gap-3 flex-wrap">
+      <h1 class="text-black">Grade A Orders</h1>
+      <!-- Station Filter Dropdown -->
+      <div class="dropdown">
+        <button class="btn btn-dark dropdown-toggle shift-down" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          Station
+        </button>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item station-filter" href="#" data-station="All">All</a></li>
+          <li><a class="dropdown-item station-filter" href="#" data-station="Grill">Grill</a></li>
+          <li><a class="dropdown-item station-filter" href="#" data-station="Fryer">Fryer</a></li>
+          <li><a class="dropdown-item station-filter" href="#" data-station="Salad">Salad</a></li>
+          <li><a class="dropdown-item station-filter" href="#" data-station="Dessert">Dessert</a></li>
+        </ul>
+      </div>
+      <!-- Status Filter Dropdown -->
+      <div class="dropdown">
+        <button class="btn btn-dark dropdown-toggle shift-down" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          Status
+        </button>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item status-filter" href="#" data-status="All">All</a></li>
+          <li><a class="dropdown-item status-filter" href="#" data-status="Current">Current</a></li>
+          <li><a class="dropdown-item status-filter" href="#" data-status="Complete">Complete</a></li>
+        </ul>
+      </div>
+      <!-- Admin Buttons -->
+      <button id="insert-csv-btn" class="btn btn-dark shift-down admin-only">Insert +</button>
+      <button id="view-csv-btn" class="btn btn-secondary shift-down admin-only">View CSV</button>
+    </div>
+    <!-- Right side: Real-Time Clock (Central Time) -->
+    <div id="clock" class="text-black"></div>
+  </div>
+
+  <!-- Drop Zone Container (hidden by default) -->
+  <div id="drop-zone-container" class="container">
+    <div id="drop-zone" class="drop-zone">
+      Drag & Drop your csv file here or click to select.
+      <input type="file" id="file-input" accept=".csv" style="display: none;">
+    </div>
+  </div>
+
+  <!-- Container for Order Cards -->
+  <div class="container mt-4">
+    <div class="row row-cols-1 row-cols-md-3 g-4" id="ordersRow">
+      <!-- If no orders exist, a placeholder will be added here -->
+    </div>
+  </div>
+
+  <!-- jQuery, Papa Parse, and Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script 
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"
+  ></script>
+  <script>
+    // Global filter variables
+    let selectedStation = 'All';
+    let selectedStatus = 'All';
+    // Object to store recipes (case-insensitive keys mapping to arrays)
+    let recipesMap = {};
+    // Variable to hold the user's role ("admin" or "worker")
+    let userRole = '';
+
+    // Real-Time Clock Functionality (Central Time)
+    function updateClock() {
+      const options = {
+        timeZone: 'America/Chicago',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+      };
+      const timeString = new Intl.DateTimeFormat('en-US', options).format(new Date());
+      document.getElementById('clock').textContent = `Central Time: ${timeString}`;
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    // Function to render a fallback message on #ordersRow if no orders exist
+    function displayEmptyOrders() {
+      $('#ordersRow').empty();
+      $('#ordersRow').append(`
+        <div class="col text-center">
+          <p>No CSV files found. Please upload a file.</p>
+        </div>
+      `);
+    }
+
+    $(document).ready(function() {
+      // Initialize and show the admin login modal using Bootstrap's JavaScript API
+      const adminModal = new bootstrap.Modal(document.getElementById('adminLoginModal'), {
+        backdrop: 'static',
+        keyboard: false
+      });
+      adminModal.show();
+
+      // Login button click: perform AJAX POST to /login
+      $('#loginButton').click(function(){
+        const username = $('#username').val();
+        const password = $('#password').val();
+
+        $.post('/login', { username, password }, function(response){
+          if(response.success) {
+            userRole = response.role;
+            adminModal.hide();
+            if(userRole === 'admin') {
+              // Show admin-only buttons (Insert and View CSV)
+              $('.admin-only').show();
+              $('#drop-zone-container').show();
+            }
+          } else {
+            alert(response.message || 'Invalid credentials!');
+          }
+        });
+      });
+
+      // Load recipes.csv and build the lookup object
+      $.ajax({
+        url: 'recipes.csv',
+        dataType: 'text'
+      })
+      .done(function(recipeData) {
+        const parsedRecipes = Papa.parse(recipeData, { header: true, skipEmptyLines: true });
+        parsedRecipes.data.forEach(function(r) {
+          const menuItem = r["Menu Item"];
+          const recipe   = r["Recipe"];
+          if (menuItem && recipe) {
+            const key = menuItem.trim().toLowerCase();
+            if (recipesMap[key]) {
+              recipesMap[key].push(recipe.trim());
+            } else {
+              recipesMap[key] = [recipe.trim()];
+            }
+          }
+        });
+      });
+
+      // Toggle the drop zone visibility when "Insert +" is clicked (admin-only)
+      $('#insert-csv-btn').click(function() {
+        if(userRole === 'admin') {
+          $('#drop-zone-container').slideToggle();
+        } else {
+          alert("You don't have permission to upload files.");
+        }
+      });
+
+      // Handle CSV file upload via drag & drop or file selection
+      const dropZone = document.getElementById('drop-zone');
+      const fileInput = document.getElementById('file-input');
+
+      dropZone.addEventListener('click', function() {
+        if(userRole === 'admin') {
+          fileInput.click();
+        } else {
+          alert("You don't have permission to upload files.");
+        }
+      });
+
+      fileInput.addEventListener('change', function(e) {
+        if (e.target.files.length) {
+          handleFile(e.target.files[0]);
+        }
+      });
+
+      dropZone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+      });
+
+      dropZone.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+      });
+
+      dropZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length) {
+          handleFile(files[0]);
+        }
+      });
+
+      function handleFile(file) {
+        if (userRole !== 'admin') {
+          alert("You don't have permission to upload files.");
+          return;
+        }
+        if (file.type !== "text/csv") {
+          alert("Please upload a valid CSV file.");
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const csvData = e.target.result;
+          const fileName = file.name; // Capture file name
+          // Send CSV data and file name to server so all clients can see it
+          $.ajax({
+            url: '/upload',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ csvData, fileName }),
+            success: function(response) {
+              if (response.success) {
+                loadOrdersFromCSV(csvData);
+                $('#drop-zone-container').slideUp();
+              } else {
+                alert(response.message || 'Upload failed.');
+              }
+            }
+          });
+        };
+        reader.readAsText(file);
+      }
+
+      // View CSV button: fetch and display list of current CSV file names in modal with only a Delete button
+      $('#view-csv-btn').click(function(){
+        $.get('/orders', function(data) {
+          let html = "";
+          if(data.ordersFiles && data.ordersFiles.length > 0) {
+            html += "<ul class='list-group'>";
+            data.ordersFiles.forEach(file => {
+              html += `<li class="list-group-item d-flex justify-content-between align-items-center">
+                ${file.fileName}
+                <button class="btn btn-sm btn-danger delete-csv-btn" data-file="${encodeURIComponent(file.fileName)}">Delete</button>
+              </li>`;
+            });
+            html += "</ul>";
+          } else {
+            html = "No CSV files uploaded.";
+          }
+          $('#csvFileList').html(html);
+          const viewModal = new bootstrap.Modal(document.getElementById('viewCSVModal'), {});
+          viewModal.show();
+        });
+      });
+
+      // Event delegation for "Delete" button in the CSV list
+      $(document).on('click', '.delete-csv-btn', function(){
+        const fileName = decodeURIComponent($(this).data('file'));
+        if(confirm("Are you sure you want to delete " + fileName + "?")){
+          $.ajax({
+            url: '/delete',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ fileName: fileName }),
+            success: function(response){
+              if(response.success){
+                alert("Deleted " + fileName);
+                // Refresh the CSV modal list
+                $('#view-csv-btn').click();
+                // Refresh the main orders area
+                $.get('/orders', function(data) {
+                  if (data.ordersFiles && data.ordersFiles.length > 0) {
+                    let latestFile = data.ordersFiles.reduce((prev, current) => 
+                      (prev.timestamp > current.timestamp) ? prev : current
+                    );
+                    loadOrdersFromCSV(latestFile.csvData);
+                  } else {
+                    displayEmptyOrders();
+                  }
+                });
+              } else {
+                alert(response.message || "Failed to delete file.");
+              }
+            }
+          });
+        }
+      });
+
+      // Poll for the latest orders from the server every 5 seconds
+      setInterval(function() {
+        $.get('/orders', function(data) {
+          if (data.ordersFiles && data.ordersFiles.length > 0) {
+            let latestFile = data.ordersFiles.reduce((prev, current) => 
+              (prev.timestamp > current.timestamp) ? prev : current
+            );
+            loadOrdersFromCSV(latestFile.csvData);
+          } else {
+            displayEmptyOrders();
+          }
+        });
+      }, 5000);
+
+      function loadOrdersFromCSV(csvData) {
+        $('#ordersRow').empty();
+        const parsedData = Papa.parse(csvData, { header: true, skipEmptyLines: true });
+        if (!parsedData.data || parsedData.data.length === 0) {
+          displayEmptyOrders();
+          return;
+        }
+        parsedData.data.forEach(function(order, index) {
+          const customerName        = order["Customer Name"];
+          const orderTime           = order["Order Time"];
+          const menuItem            = order["Menu Item"];
+          const specialInstructions = order["Special Instructions"];
+          const orderType           = order["Order Type"];
+          const workstation         = order["Workstation"];
+          const status              = order["Status"] || "Pending";
+          const dummyTimer          = "00:05";
+
+          let orderTypeClass = "";
+          if (orderType && orderType.toLowerCase() === "for here") {
+            orderTypeClass = "type-for-here";
+          } else if (orderType && orderType.toLowerCase() === "to go") {
+            orderTypeClass = "type-to-go";
+          } else {
+            orderTypeClass = "btn-secondary";
+          }
+
+          let matchedRecipe = "";
+          if (menuItem) {
+            const key = menuItem.trim().toLowerCase();
+            if (recipesMap[key]) {
+              const recipesArray = recipesMap[key];
+              matchedRecipe = recipesArray[Math.floor(Math.random() * recipesArray.length)];
+            }
+          }
+
+          const orderHTML = `
+            <div class="col" data-index="${index}" data-workstation="${workstation}" data-status="${status}">
+              <div class="order-card">
+                <div class="order-header">
+                  <div>
+                    <h5>${customerName}</h5>
+                    <small>${orderTime}</small>
+                  </div>
+                  <div>
+                    <span class="order-timer">${dummyTimer}</span>
+                  </div>
+                </div>
+                <div class="order-body">
+                  <button class="btn btn-info order-type-btn ${orderTypeClass}">
+                    ${orderType || 'N/A'}
+                  </button>
+                  <button class="btn btn-sm btn-success float-end complete-btn">
+                    Mark Complete
+                  </button>
+                  <ul class="order-items mt-3">
+                    <li><strong>Item:</strong> ${menuItem}</li>
+                    ${matchedRecipe ? `<li><strong>Recipe:</strong> ${matchedRecipe}</li>` : ''}
+                    <li><strong>Instructions:</strong> ${specialInstructions}</li>
+                    <li><strong>Status:</strong> ${status}</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          `;
+          $('#ordersRow').append(orderHTML);
+        });
+        applyFilters();
+      }
+
+      // When the "Mark Complete" button is clicked, update the order's status on the server
+      $(document).on('click', '.complete-btn', function() {
+        const card = $(this).closest('.col');
+        const orderIndex = card.data('index');
+        $.ajax({
+          url: '/updateStatus',
+          method: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify({ orderIndex: orderIndex, newStatus: "Complete" }),
+          success: function(response) {
+            if(response.success) {
+              $.get('/orders', function(data) {
+                if(data.ordersFiles && data.ordersFiles.length > 0) {
+                  let latestFile = data.ordersFiles.reduce((prev, current) => (prev.timestamp > current.timestamp) ? prev : current);
+                  loadOrdersFromCSV(latestFile.csvData);
+                } else {
+                  displayEmptyOrders();
+                }
+              });
+            } else {
+              alert(response.message || "Failed to update status.");
+            }
+          }
+        });
+      });
+
+      // Filtering functionality
+      $(document).on('click', '.station-filter', function(e) {
+        e.preventDefault();
+        selectedStation = $(this).data('station');
+        $(this).closest('.dropdown').find('.dropdown-toggle').text(selectedStation);
+        applyFilters();
+      });
+
+      $(document).on('click', '.status-filter', function(e) {
+        e.preventDefault();
+        selectedStatus = $(this).data('status');
+        $(this).closest('.dropdown').find('.dropdown-toggle').text(selectedStatus);
+        applyFilters();
+      });
+
+      function applyFilters() {
+        $('#ordersRow .col').each(function() {
+          const cardStation = $(this).data('workstation');
+          const cardStatus  = $(this).data('status');
+          let showCard = true;
+          if (selectedStation !== 'All' && cardStation !== selectedStation) {
+            showCard = false;
+          }
+          if (selectedStatus !== 'All') {
+            if (selectedStatus === 'Current') {
+              if (!(cardStatus === 'Pending' || cardStatus === 'In-progress')) {
+                showCard = false;
+              }
+            } else if (selectedStatus === 'Complete') {
+              if (cardStatus !== 'Complete') {
+                showCard = false;
+              }
+            }
+          }
+          $(this).toggle(showCard);
+        });
+      }
+    });
+  </script>
+</body>
+</html>
