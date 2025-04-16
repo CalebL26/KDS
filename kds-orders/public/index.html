@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Fresh KDS Orders with Recipes, Filters & CSV Insert</title>
+  <title>Order Dashboard - Redesigned Layout</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Bootstrap CSS -->
   <link 
@@ -11,6 +11,22 @@
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
     crossorigin="anonymous"
   >
+	<link 
+  rel="stylesheet" 
+  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+	<link 
+  rel="stylesheet" 
+  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+	<link 
+  rel="stylesheet" 
+  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+	<link 
+  rel="stylesheet" 
+  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+	<link 
+  rel="stylesheet" 
+  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
   <style>
     body {
       background-color: #1d1d5c;
@@ -45,67 +61,29 @@
       border-color: #fff;
       color: #fff;
     }
+    /* Card styling */
     .order-card {
-      border-radius: 8px;
-      overflow: hidden;
       margin-bottom: 1rem;
-      background-color: #070707;
     }
-    .order-header {
+    .order-card .card-header {
       background-color: #6c9b77;
       color: #fff;
+      padding: 0.5rem 1rem;
+    }
+    .order-card .card-header h4 {
+      margin-bottom: 0;
+      font-weight: bold;
+    }
+    .order-card .card-body {
+      background-color: #070707;
+      color: #fff;
       padding: 1rem;
+    }
+    /* Flex helper class */
+    .d-flex-between {
       display: flex;
       justify-content: space-between;
       align-items: center;
-    }
-    .order-header h5 {
-      margin: 0;
-      font-weight: 600;
-    }
-    .order-header small {
-      display: block;
-      font-size: 0.8rem;
-    }
-    .order-timer {
-      background-color: #ffc107;
-      color: #343a40;
-      padding: 0.4rem 0.6rem;
-      border-radius: 4px;
-      font-weight: 600;
-      font-size: 0.9rem;
-    }
-    .order-body {
-      padding: 1rem;
-    }
-    .order-type-btn {
-      display: inline-block;
-      padding: 0.4rem 0.8rem;
-      border-radius: 4px;
-      color: #fff;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      text-transform: uppercase;
-      font-size: 0.85rem;
-      border: none;
-    }
-    .type-for-here {
-      background-color: #d63384;
-    }
-    .type-to-go {
-      background-color: #fd7e14;
-    }
-    .order-items {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-    .order-items li {
-      padding: 0.3rem 0;
-      border-bottom: 1px solid rgba(255,255,255,0.2);
-    }
-    .order-items li:last-child {
-      border-bottom: none;
     }
   </style>
 </head>
@@ -114,24 +92,24 @@
   <div class="modal fade" id="adminLoginModal" tabindex="-1" aria-labelledby="adminLoginModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content text-dark">
-         <div class="modal-header">
-            <h5 class="modal-title" id="adminLoginModalLabel">Admin Login</h5>
-         </div>
-         <div class="modal-body">
-            <form id="adminLoginForm">
-                <div class="mb-3">
-                  <label for="username" class="form-label">Username</label>
-                  <input type="text" class="form-control" id="username" required>
-                </div>
-                <div class="mb-3">
-                  <label for="password" class="form-label">Password</label>
-                  <input type="password" class="form-control" id="password" required>
-                </div>
-            </form>
-         </div>
-         <div class="modal-footer">
-            <button type="button" class="btn btn-primary" id="loginButton">Login</button>
-         </div>
+        <div class="modal-header">
+          <h5 class="modal-title" id="adminLoginModalLabel">Admin Login</h5>
+        </div>
+        <div class="modal-body">
+          <form id="adminLoginForm">
+            <div class="mb-3">
+              <label for="username" class="form-label">Username</label>
+              <input type="text" class="form-control" id="username" required>
+            </div>
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input type="password" class="form-control" id="password" required>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="loginButton">Login</button>
+        </div>
       </div>
     </div>
   </div>
@@ -140,39 +118,35 @@
   <div class="modal fade" id="viewCSVModal" tabindex="-1" aria-labelledby="viewCSVModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
       <div class="modal-content text-dark">
-         <div class="modal-header">
-            <h5 class="modal-title" id="viewCSVModalLabel">CSV Files</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-         </div>
-         <div class="modal-body" id="csvFileList" style="max-height:400px; overflow:auto;"></div>
+        <div class="modal-header">
+          <h5 class="modal-title" id="viewCSVModalLabel">CSV Files</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="csvFileList" style="max-height:400px; overflow:auto;"></div>
       </div>
     </div>
   </div>
 
   <!-- Top Bar -->
   <div class="top-bar d-flex align-items-center justify-content-between gap-3">
-    <!-- Left group: Heading, filters, admin buttons -->
+    <!-- Left Group: Heading, dynamic station filter, status filter, admin buttons -->
     <div class="d-flex align-items-center gap-3 flex-wrap">
-      <h1 class="text-black">Grade A Orders</h1>
-      <!-- Station Filter Dropdown -->
+      <h1 class="text-black">Order Dashboard</h1>
+      <!-- Station Filter Dropdown (built dynamically) -->
       <div class="dropdown">
-        <button class="btn btn-dark dropdown-toggle shift-down" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-          Station
+        <button id="stationDropdownToggle" class="btn btn-dark dropdown-toggle shift-down" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          All
         </button>
-        <ul class="dropdown-menu">
-          <li><a class="dropdown-item station-filter" href="#" data-station="All">All</a></li>
-          <li><a class="dropdown-item station-filter" href="#" data-station="Grill">Grill</a></li>
-          <li><a class="dropdown-item station-filter" href="#" data-station="Fryer">Fryer</a></li>
-          <li><a class="dropdown-item station-filter" href="#" data-station="Salad">Salad</a></li>
-          <li><a class="dropdown-item station-filter" href="#" data-station="Dessert">Dessert</a></li>
+        <ul class="dropdown-menu" id="stationDropdownMenu">
+          <!-- We'll populate this with JavaScript -->
         </ul>
       </div>
       <!-- Status Filter Dropdown -->
       <div class="dropdown">
-        <button class="btn btn-dark dropdown-toggle shift-down" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-          Status
+        <button id="statusDropdownToggle" class="btn btn-dark dropdown-toggle shift-down" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          All
         </button>
-        <ul class="dropdown-menu">
+        <ul class="dropdown-menu" id="statusDropdownMenu">
           <li><a class="dropdown-item status-filter" href="#" data-status="All">All</a></li>
           <li><a class="dropdown-item status-filter" href="#" data-status="Current">Current</a></li>
           <li><a class="dropdown-item status-filter" href="#" data-status="Complete">Complete</a></li>
@@ -186,7 +160,7 @@
     <div id="clock" class="text-black"></div>
   </div>
 
-  <!-- Drop Zone Container (hidden by default) -->
+  <!-- Drop Zone Container -->
   <div id="drop-zone-container" class="container">
     <div id="drop-zone" class="drop-zone">
       Drag & Drop your csv file here or click to select.
@@ -197,7 +171,7 @@
   <!-- Container for Order Cards -->
   <div class="container mt-4">
     <div class="row row-cols-1 row-cols-md-3 g-4" id="ordersRow">
-      <!-- If no orders exist, a placeholder will be added here -->
+      <!-- If no data is available, we'll add a placeholder here -->
     </div>
   </div>
 
@@ -213,12 +187,9 @@
     // Global filter variables
     let selectedStation = 'All';
     let selectedStatus = 'All';
-    // Object to store recipes (case-insensitive keys mapping to arrays)
-    let recipesMap = {};
-    // Variable to hold the user's role ("admin" or "worker")
     let userRole = '';
 
-    // Real-Time Clock Functionality (Central Time)
+    // Real-time clock (Central Time)
     function updateClock() {
       const options = {
         timeZone: 'America/Chicago',
@@ -233,35 +204,34 @@
     updateClock();
     setInterval(updateClock, 1000);
 
-    // Function to render a fallback message on #ordersRow if no orders exist
+    // If no CSV data, show placeholder
     function displayEmptyOrders() {
       $('#ordersRow').empty();
       $('#ordersRow').append(`
         <div class="col text-center">
-          <p>No CSV files found. Please upload a file.</p>
+          <p>No CSV files or data found. Please upload a file.</p>
         </div>
       `);
     }
 
-    $(document).ready(function() {
-      // Initialize and show the admin login modal using Bootstrap's JavaScript API
+    $(document).ready(function(){
+      // Admin Login Modal
       const adminModal = new bootstrap.Modal(document.getElementById('adminLoginModal'), {
         backdrop: 'static',
         keyboard: false
       });
       adminModal.show();
 
-      // Login button click: perform AJAX POST to /login
+      // Login handler
       $('#loginButton').click(function(){
         const username = $('#username').val();
         const password = $('#password').val();
-
         $.post('/login', { username, password }, function(response){
           if(response.success) {
             userRole = response.role;
             adminModal.hide();
             if(userRole === 'admin') {
-              // Show admin-only buttons (Insert and View CSV)
+              // Show admin elements
               $('.admin-only').show();
               $('#drop-zone-container').show();
             }
@@ -271,29 +241,8 @@
         });
       });
 
-      // Load recipes.csv and build the lookup object
-      $.ajax({
-        url: 'recipes.csv',
-        dataType: 'text'
-      })
-      .done(function(recipeData) {
-        const parsedRecipes = Papa.parse(recipeData, { header: true, skipEmptyLines: true });
-        parsedRecipes.data.forEach(function(r) {
-          const menuItem = r["Menu Item"];
-          const recipe   = r["Recipe"];
-          if (menuItem && recipe) {
-            const key = menuItem.trim().toLowerCase();
-            if (recipesMap[key]) {
-              recipesMap[key].push(recipe.trim());
-            } else {
-              recipesMap[key] = [recipe.trim()];
-            }
-          }
-        });
-      });
-
-      // Toggle the drop zone visibility when "Insert +" is clicked (admin-only)
-      $('#insert-csv-btn').click(function() {
+      // Toggle CSV drop zone
+      $('#insert-csv-btn').click(function(){
         if(userRole === 'admin') {
           $('#drop-zone-container').slideToggle();
         } else {
@@ -301,11 +250,11 @@
         }
       });
 
-      // Handle CSV file upload via drag & drop or file selection
+      // Drag & drop or file selection
       const dropZone = document.getElementById('drop-zone');
       const fileInput = document.getElementById('file-input');
 
-      dropZone.addEventListener('click', function() {
+      dropZone.addEventListener('click', function(){
         if(userRole === 'admin') {
           fileInput.click();
         } else {
@@ -313,52 +262,50 @@
         }
       });
 
-      fileInput.addEventListener('change', function(e) {
-        if (e.target.files.length) {
+      fileInput.addEventListener('change', function(e){
+        if(e.target.files.length) {
           handleFile(e.target.files[0]);
         }
       });
 
-      dropZone.addEventListener('dragover', function(e) {
+      dropZone.addEventListener('dragover', function(e){
         e.preventDefault();
         dropZone.classList.add('dragover');
       });
-
-      dropZone.addEventListener('dragleave', function(e) {
+      dropZone.addEventListener('dragleave', function(e){
         e.preventDefault();
         dropZone.classList.remove('dragover');
       });
-
-      dropZone.addEventListener('drop', function(e) {
+      dropZone.addEventListener('drop', function(e){
         e.preventDefault();
         dropZone.classList.remove('dragover');
         const files = e.dataTransfer.files;
-        if (files.length) {
+        if(files.length) {
           handleFile(files[0]);
         }
       });
 
       function handleFile(file) {
-        if (userRole !== 'admin') {
+        if(userRole !== 'admin') {
           alert("You don't have permission to upload files.");
           return;
         }
-        if (file.type !== "text/csv") {
+        if(file.type !== "text/csv") {
           alert("Please upload a valid CSV file.");
           return;
         }
         const reader = new FileReader();
         reader.onload = function(e) {
           const csvData = e.target.result;
-          const fileName = file.name; // Capture file name
-          // Send CSV data and file name to server so all clients can see it
+          const fileName = file.name;
+          // Upload CSV to server
           $.ajax({
             url: '/upload',
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({ csvData, fileName }),
             success: function(response) {
-              if (response.success) {
+              if(response.success) {
                 loadOrdersFromCSV(csvData);
                 $('#drop-zone-container').slideUp();
               } else {
@@ -370,17 +317,19 @@
         reader.readAsText(file);
       }
 
-      // View CSV button: fetch and display list of current CSV file names in modal with only a Delete button
+      // View CSV Modal
       $('#view-csv-btn').click(function(){
-        $.get('/orders', function(data) {
+        $.get('/orders', function(data){
           let html = "";
           if(data.ordersFiles && data.ordersFiles.length > 0) {
             html += "<ul class='list-group'>";
             data.ordersFiles.forEach(file => {
-              html += `<li class="list-group-item d-flex justify-content-between align-items-center">
-                ${file.fileName}
-                <button class="btn btn-sm btn-danger delete-csv-btn" data-file="${encodeURIComponent(file.fileName)}">Delete</button>
-              </li>`;
+              html += `
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  ${file.fileName}
+                  <button class="btn btn-sm btn-danger delete-csv-btn" data-file="${encodeURIComponent(file.fileName)}">Delete</button>
+                </li>
+              `;
             });
             html += "</ul>";
           } else {
@@ -392,7 +341,7 @@
         });
       });
 
-      // Event delegation for "Delete" button in the CSV list
+      // Delete CSV
       $(document).on('click', '.delete-csv-btn', function(){
         const fileName = decodeURIComponent($(this).data('file'));
         if(confirm("Are you sure you want to delete " + fileName + "?")){
@@ -400,16 +349,16 @@
             url: '/delete',
             method: 'POST',
             contentType: 'application/json',
-            data: JSON.stringify({ fileName: fileName }),
+            data: JSON.stringify({ fileName }),
             success: function(response){
               if(response.success){
                 alert("Deleted " + fileName);
-                // Refresh the CSV modal list
+                // Refresh the CSV list
                 $('#view-csv-btn').click();
-                // Refresh the main orders area
-                $.get('/orders', function(data) {
-                  if (data.ordersFiles && data.ordersFiles.length > 0) {
-                    let latestFile = data.ordersFiles.reduce((prev, current) => 
+                // Refresh the main data as well
+                $.get('/orders', function(data){
+                  if(data.ordersFiles && data.ordersFiles.length > 0) {
+                    let latestFile = data.ordersFiles.reduce((prev, current) =>
                       (prev.timestamp > current.timestamp) ? prev : current
                     );
                     loadOrdersFromCSV(latestFile.csvData);
@@ -425,11 +374,11 @@
         }
       });
 
-      // Poll for the latest orders from the server every 5 seconds
-      setInterval(function() {
-        $.get('/orders', function(data) {
-          if (data.ordersFiles && data.ordersFiles.length > 0) {
-            let latestFile = data.ordersFiles.reduce((prev, current) => 
+      // Poll for updates every 5s
+      setInterval(function(){
+        $.get('/orders', function(data){
+          if(data.ordersFiles && data.ordersFiles.length > 0) {
+            let latestFile = data.ordersFiles.reduce((prev, current) =>
               (prev.timestamp > current.timestamp) ? prev : current
             );
             loadOrdersFromCSV(latestFile.csvData);
@@ -439,89 +388,126 @@
         });
       }, 5000);
 
-      function loadOrdersFromCSV(csvData) {
+      // Build dynamic station dropdown from "Prep Area"
+      function buildStationDropdown(stationSet) {
+        const stationDropdownMenu = document.getElementById('stationDropdownMenu');
+        stationDropdownMenu.innerHTML = '';
+
+        // Always include "All"
+        let liAll = document.createElement('li');
+        liAll.innerHTML = `<a class="dropdown-item station-filter" href="#" data-station="All">All</a>`;
+        stationDropdownMenu.appendChild(liAll);
+
+        // Add each distinct station
+        stationSet.forEach(station => {
+          let li = document.createElement('li');
+          li.innerHTML = `<a class="dropdown-item station-filter" href="#" data-station="${station}">${station}</a>`;
+          stationDropdownMenu.appendChild(li);
+        });
+
+        // If current selectedStation isn't in the set, revert to All
+        if(!stationSet.has(selectedStation) && selectedStation !== 'All') {
+          selectedStation = 'All';
+          document.getElementById('stationDropdownToggle').textContent = 'All';
+        }
+      }
+
+      // Load CSV data, skip rows with Qty=0, build station filter, and display
+      function loadOrdersFromCSV(csvData){
         $('#ordersRow').empty();
-        const parsedData = Papa.parse(csvData, { header: true, skipEmptyLines: true });
-        if (!parsedData.data || parsedData.data.length === 0) {
+        const parsed = Papa.parse(csvData, { header: true, skipEmptyLines: true });
+        if(!parsed.data || parsed.data.length === 0) {
           displayEmptyOrders();
           return;
         }
-        parsedData.data.forEach(function(order, index) {
-          const customerName        = order["Customer Name"];
-          const orderTime           = order["Order Time"];
-          const menuItem            = order["Menu Item"];
-          const specialInstructions = order["Special Instructions"];
-          const orderType           = order["Order Type"];
-          const workstation         = order["Workstation"];
-          const status              = order["Status"] || "Pending";
-          const dummyTimer          = "00:05";
 
-          let orderTypeClass = "";
-          if (orderType && orderType.toLowerCase() === "for here") {
-            orderTypeClass = "type-for-here";
-          } else if (orderType && orderType.toLowerCase() === "to go") {
-            orderTypeClass = "type-to-go";
-          } else {
-            orderTypeClass = "btn-secondary";
+        let cardIndex = 0;
+        let stationSet = new Set();
+
+        parsed.data.forEach(row => {
+          // Skip rows if Qty=0
+          const quantity = parseFloat(row["Qty"]) || 0;
+          if(quantity === 0) return;
+
+          // Use "Prep Area" as station for filter, ignoring .Package Title
+          let station = (row["Prep Area"] || '').trim();
+          if(station && station !== '.Package Title') {
+            stationSet.add(station);
           }
 
-          let matchedRecipe = "";
-          if (menuItem) {
-            const key = menuItem.trim().toLowerCase();
-            if (recipesMap[key]) {
-              const recipesArray = recipesMap[key];
-              matchedRecipe = recipesArray[Math.floor(Math.random() * recipesArray.length)];
-            }
-          }
+          // Extract relevant fields for the new layout
+          const itemName       = row["Item Name"] || "";
+          const itemUnit       = row["Item Unit"] || "";
+          const eventDetails   = row["Event Details Description"] || ""; // Modifiers
+          // We'll rename "Prep Area" to "Packaging" in the display
+          const packaging      = station || "";
+          const siteName       = row["Site Name"] || "";
+          const departure      = row["Departure"] || "";
+          const deliveryTime   = row["Delivery Time"] || "";
+          const status         = row["Status"] || "Pending";
 
-          const orderHTML = `
-            <div class="col" data-index="${index}" data-workstation="${workstation}" data-status="${status}">
-              <div class="order-card">
-                <div class="order-header">
-                  <div>
-                    <h5>${customerName}</h5>
-                    <small>${orderTime}</small>
-                  </div>
-                  <div>
-                    <span class="order-timer">${dummyTimer}</span>
+          // Build the card per your design:
+          // - Top: itemName (bold, large), itemUnit beneath, Qty top-right
+          // - Middle: "Modifers" + "Packaging"
+          // - Bottom: site, departure, delivery time + "Mark Complete"
+          const cardHTML = `
+            <div class="col" data-index="${cardIndex}" data-station="${station}" data-status="${status}">
+              <div class="card order-card">
+                <!-- Card Header -->
+                <div class="card-header">
+                  <div class="d-flex-between">
+                    <div>
+                      <h6 class="mb-0 fw-bold">${itemName}</h6>
+                      <small>${itemUnit}</small>
+                    </div>
+                    <div>
+                      <strong>Qty: ${quantity}</strong>
+                    </div>
                   </div>
                 </div>
-                <div class="order-body">
-                  <button class="btn btn-info order-type-btn ${orderTypeClass}">
-                    ${orderType || 'N/A'}
-                  </button>
-                  <button class="btn btn-sm btn-success float-end complete-btn">
-                    Mark Complete
-                  </button>
-                  <ul class="order-items mt-3">
-                    <li><strong>Item:</strong> ${menuItem}</li>
-                    ${matchedRecipe ? `<li><strong>Recipe:</strong> ${matchedRecipe}</li>` : ''}
-                    <li><strong>Instructions:</strong> ${specialInstructions}</li>
-                    <li><strong>Status:</strong> ${status}</li>
-                  </ul>
+                <!-- Card Body -->
+                <div class="card-body">
+                  <p><strong><i class="bi bi-arrow-right-circle"> ${eventDetails}</i></strong></p>
+                  <p><strong>Packaging:</strong> ${packaging}</p>
+                  <div class="d-flex-between">
+                    <div>
+                      <strong><i class="bi bi-geo-alt"> ${siteName}</i></strong> <br>
+                      <strong><i class="bi bi-box-arrow-up"> ${departure}</i></strong> <br>
+                      <strong><i class="bi bi-truck">  ${deliveryTime}</i></strong> 
+                    </div>
+                    <button class="btn btn-sm btn-success mark-complete-btn">Mark Complete</button>
+                  </div>
                 </div>
               </div>
             </div>
           `;
-          $('#ordersRow').append(orderHTML);
+          $('#ordersRow').append(cardHTML);
+          cardIndex++;
         });
+
+        // Build station dropdown from all distinct station values
+        buildStationDropdown(stationSet);
+
+        // Apply the currently selected filters
         applyFilters();
       }
 
-      // When the "Mark Complete" button is clicked, update the order's status on the server
-      $(document).on('click', '.complete-btn', function() {
-        const card = $(this).closest('.col');
-        const orderIndex = card.data('index');
+      // Mark complete -> update status to "Complete"
+      $(document).on('click', '.mark-complete-btn', function(){
+        const col = $(this).closest('.col');
+        const orderIndex = col.data('index');
         $.ajax({
           url: '/updateStatus',
           method: 'POST',
           contentType: 'application/json',
-          data: JSON.stringify({ orderIndex: orderIndex, newStatus: "Complete" }),
-          success: function(response) {
-            if(response.success) {
-              $.get('/orders', function(data) {
+          data: JSON.stringify({ orderIndex, newStatus: "Complete" }),
+          success: function(response){
+            if(response.success){
+              $.get('/orders', function(data){
                 if(data.ordersFiles && data.ordersFiles.length > 0) {
-                  let latestFile = data.ordersFiles.reduce((prev, current) => (prev.timestamp > current.timestamp) ? prev : current);
+                  let latestFile = data.ordersFiles.reduce((prev, current)=>
+                    (prev.timestamp > current.timestamp) ? prev : current
+                  );
                   loadOrdersFromCSV(latestFile.csvData);
                 } else {
                   displayEmptyOrders();
@@ -534,41 +520,46 @@
         });
       });
 
-      // Filtering functionality
-      $(document).on('click', '.station-filter', function(e) {
+      // Station filter
+      $(document).on('click', '.station-filter', function(e){
         e.preventDefault();
         selectedStation = $(this).data('station');
-        $(this).closest('.dropdown').find('.dropdown-toggle').text(selectedStation);
+        document.getElementById('stationDropdownToggle').textContent = selectedStation;
         applyFilters();
       });
 
-      $(document).on('click', '.status-filter', function(e) {
+      // Status filter
+      $(document).on('click', '.status-filter', function(e){
         e.preventDefault();
         selectedStatus = $(this).data('status');
-        $(this).closest('.dropdown').find('.dropdown-toggle').text(selectedStatus);
+        document.getElementById('statusDropdownToggle').textContent = selectedStatus;
         applyFilters();
       });
 
-      function applyFilters() {
-        $('#ordersRow .col').each(function() {
-          const cardStation = $(this).data('workstation');
+      // Apply filters
+      function applyFilters(){
+        $('#ordersRow .col').each(function(){
+          const cardStation = $(this).data('station');
           const cardStatus  = $(this).data('status');
-          let showCard = true;
-          if (selectedStation !== 'All' && cardStation !== selectedStation) {
-            showCard = false;
+          let show = true;
+
+          // Filter by station
+          if(selectedStation !== 'All' && cardStation !== selectedStation) {
+            show = false;
           }
-          if (selectedStatus !== 'All') {
-            if (selectedStatus === 'Current') {
-              if (!(cardStatus === 'Pending' || cardStatus === 'In-progress')) {
-                showCard = false;
+          // Filter by status
+          if(selectedStatus !== 'All') {
+            if(selectedStatus === 'Current') {
+              if(!(cardStatus === 'Pending' || cardStatus === 'In-progress')) {
+                show = false;
               }
-            } else if (selectedStatus === 'Complete') {
-              if (cardStatus !== 'Complete') {
-                showCard = false;
+            } else if(selectedStatus === 'Complete') {
+              if(cardStatus !== 'Complete') {
+                show = false;
               }
             }
           }
-          $(this).toggle(showCard);
+          $(this).toggle(show);
         });
       }
     });
