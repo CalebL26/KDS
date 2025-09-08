@@ -80,18 +80,10 @@ The team is considering using VPN access for secure connections to the Grade‑A
 
 Make the kitchen faster and more organized by:
 
-Removing paper tickets
+Removing white board orders
 
 Keeping all stations on the same page
 
 Saving Grade‑A Catering time and costs every day
 
-Staying synced automatically via the CSV auto‑import script Make the kitchen faster and more organized by:
-
-Removing paper tickets
-
-Keeping all stations on the same page
-
-Automating order imports into the database
-
-Saving Grade‑A Catering time and costs every day.
+Staying synced automatically via the CSV auto‑import script Make the kitchen faster and more organized by
