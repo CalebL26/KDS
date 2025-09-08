@@ -1,6 +1,6 @@
 # What It Is
 
-This is a Kitchen Display System (KDS) for Grade‑A Catering. It replaces paper tickets with a simple screen that shows orders as cards. Orders can be marked New → In‑Progress → Complete. The system highlights serve times (ST/DT), allows filtering by station, and shows upcoming orders for the next 3 days.
+This is a Kitchen Display System (KDS) for Grade‑A Catering. It replaces white board tickets with a simple screen that shows orders as cards. Orders can be marked New → In‑Progress → Complete. The system highlights serve times (ST/DT), allows filtering by station, and shows upcoming orders for the next 3 days.
 
 
 
